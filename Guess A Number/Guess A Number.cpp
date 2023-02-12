@@ -6,7 +6,7 @@ int main()
 {
     int number = 0, guessedNumber = 0, attemptsNum = 0;
 
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
     number = rand() % 100 + 1;
     cout << "Guess the number from 1 to 100!" << endl;
 
