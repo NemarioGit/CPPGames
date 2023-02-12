@@ -31,7 +31,11 @@ int main()
         if (guessedNumber > number) cout << "Too high!\n" << endl;
         else if (guessedNumber < number) cout << "Too low!\n" << endl;
         else {
-            cout << "That's right! It took you " << attemptsNum << " attempts!";
+            cout << "That's right! It took you " << attemptsNum << " attempts!\n" << endl;
+            cout << "Press any key to exit...";
+            //Waiting for any input before exiting the app
+            cin.ignore(); 
+            cin.get();
             exit(0);
         }
 
