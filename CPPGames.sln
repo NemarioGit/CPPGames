@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Guess A Number", "Guess A Number\Guess A Number.vcxproj", "{6327004C-A3BA-4EC3-8E66-83CF257226A2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Snake", "Snake\Snake.vcxproj", "{B6450B00-1568-462E-B127-771B0D7E0AF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{6327004C-A3BA-4EC3-8E66-83CF257226A2}.Release|x64.Build.0 = Release|x64
 		{6327004C-A3BA-4EC3-8E66-83CF257226A2}.Release|x86.ActiveCfg = Release|Win32
 		{6327004C-A3BA-4EC3-8E66-83CF257226A2}.Release|x86.Build.0 = Release|Win32
+		{B6450B00-1568-462E-B127-771B0D7E0AF0}.Debug|x64.ActiveCfg = Debug|x64
+		{B6450B00-1568-462E-B127-771B0D7E0AF0}.Debug|x64.Build.0 = Debug|x64
+		{B6450B00-1568-462E-B127-771B0D7E0AF0}.Debug|x86.ActiveCfg = Debug|Win32
+		{B6450B00-1568-462E-B127-771B0D7E0AF0}.Debug|x86.Build.0 = Debug|Win32
+		{B6450B00-1568-462E-B127-771B0D7E0AF0}.Release|x64.ActiveCfg = Release|x64
+		{B6450B00-1568-462E-B127-771B0D7E0AF0}.Release|x64.Build.0 = Release|x64
+		{B6450B00-1568-462E-B127-771B0D7E0AF0}.Release|x86.ActiveCfg = Release|Win32
+		{B6450B00-1568-462E-B127-771B0D7E0AF0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
