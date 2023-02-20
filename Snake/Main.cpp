@@ -1,16 +1,20 @@
 
 #include <iostream>
 #include <SDL.h>
+#include <cmath>
 #include "Main.h"
 
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
-SDL_Rect renderGrid[GRID_AREA];
+SDL_Rect render_grid[grid_area];
 SDL_Event event;
 
-int snakeLength = 3;
-int snakePoses[GRID_AREA]; 
-bool isRunning = true;
+int snake_length = 3; 
+int snake_poses[grid_area]; //Positions of all snake segments
+
+int food_pos;
+
+bool is_running = true; //Is game currently running
 
 /// <summary>
 /// W = -GRID_WIDTH
@@ -20,39 +24,43 @@ bool isRunning = true;
 /// </summary>
 int direction = 1;
 
-int headPosition = GRID_HEIGHT / 2 * GRID_WIDTH + GRID_WIDTH / 2; //Setting head to the center
+int head_position = grid_height / 2 * grid_width + grid_width / 2; //Position of the snake's head
 
 int main(int argc, char* args[])
 {   
 	if (!init()) return -1;
 		
 
-    while (isRunning)
+    while (is_running)
     {
-		handleInput();
+		handle_input();
 
-        updatePosition();
+        update_position();
+
+		check_snake_collisions();
 
 		//Clear and render snake & food
         render();
 
-        SDL_Delay(150);
+
+        SDL_Delay(132);
     }
 
     deinit();
     return 0;
 }
 
-
 //initialize game
 bool init() {
 
+	srand(static_cast<unsigned int>(time(nullptr)));
+
 	//Filling array of cells to draw later
-	for (int i = 0; i < GRID_HEIGHT; i++)
+	for (int i = 0; i < grid_height; i++)
 	{
-		for (int j = 0; j < GRID_WIDTH; j++)
+		for (int j = 0; j < grid_width; j++)
 		{
-			renderGrid[i * GRID_WIDTH + j] = { CELL_SIZE * j, CELL_SIZE * i, CELL_SIZE, CELL_SIZE };
+			render_grid[i * grid_width + j] = { cell_size * j, cell_size * i, cell_size, cell_size };
 		}
 	}
 
@@ -61,7 +69,7 @@ bool init() {
 		return false;
 	}
 
-	window = SDL_CreateWindow("SNAKE", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("SNAKE", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
 	if (window == nullptr)
 	{
 		printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -75,11 +83,12 @@ bool init() {
 		return false;
 	}
 
-	clearWindow();
+	clear_window();
 
-	snakePoses[0] = headPosition;
-	snakePoses[1] = headPosition;
-	snakePoses[2] = headPosition;
+	snake_poses[0] = head_position;
+	snake_poses[1] = head_position;
+	snake_poses[2] = head_position;
+	spawn_food();
 	return true;
 }
 
@@ -91,7 +100,7 @@ void deinit() {
 	SDL_Quit();
 }
 
-void clearWindow() {
+void clear_window() {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -99,15 +108,21 @@ void clearWindow() {
 
 void render() {
 
-	clearWindow();
-	for (int i = 0; i < snakeLength; i++)
+	clear_window();
+	//Render snake
+	for (int i = 0; i < snake_length; i++)
 	{
-		SDL_RenderFillRect(renderer, &renderGrid[snakePoses[i]]);
+		SDL_RenderFillRect(renderer, &render_grid[snake_poses[i]]);
 	}
+
+	//Render food
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	SDL_RenderFillRect(renderer, &render_grid[food_pos]);
+
 	SDL_RenderPresent(renderer);
 }
 
-void handleInput() {
+void handle_input() {
 	
 	bool calledEvent = false;
 	while (SDL_PollEvent(&event))
@@ -117,15 +132,15 @@ void handleInput() {
 		switch (event.type)
 		{
 		case SDL_QUIT:
-			isRunning = false;
+			is_running = false;
 			break;
 
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.scancode)
 			{
 			case SDL_SCANCODE_W:
-				if (direction == GRID_WIDTH || direction == -GRID_WIDTH) break;
-				direction = -GRID_WIDTH;
+				if (direction == grid_width || direction == -grid_width) break;
+				direction = -grid_width;
 				calledEvent = true;
 				break;
 
@@ -136,8 +151,8 @@ void handleInput() {
 				break;
 
 			case SDL_SCANCODE_S:
-				if (direction == GRID_WIDTH || direction == -GRID_WIDTH) break;
-				direction = GRID_WIDTH;
+				if (direction == grid_width || direction == -grid_width) break;
+				direction = grid_width;
 				calledEvent = true;
 				break;
 
@@ -158,12 +173,54 @@ void handleInput() {
 	}
 }
 
-void updatePosition() {
-	for (int i = snakeLength - 1; i > 0; i--)
+void update_position() {
+	for (int i = snake_length - 1; i > 0; i--)
 	{
-		snakePoses[i] = snakePoses[i - 1];
+		snake_poses[i] = snake_poses[i - 1];
 	}
-	snakePoses[0] = headPosition;
-	headPosition += direction;
-	
+	snake_poses[0] = head_position;
+	head_position += direction;
+}
+
+void spawn_food() {
+	do food_pos = rand() % grid_area;
+	while (is_cell_snake(food_pos, true));
+}
+
+bool is_cell_snake(int check, bool food_check)
+{
+	for (int i = 0; i < snake_length; i++)
+	{
+		if (check == snake_poses[i])
+		{
+			return true;
+		}
+	}
+	if (food_check) return check == head_position;
+	return false;
+}
+
+void check_snake_collisions()
+{
+	if (head_position == food_pos)
+	{
+		increase_snake();
+	}
+	else if (is_cell_snake(head_position))
+	{
+		is_running = false;
+	}
+	else if ((head_position < 0) || (head_position > grid_area) || 
+		(abs(head_position % grid_width) - (head_position - direction) % grid_width) == grid_width - 1 || 
+		(head_position % grid_width == 0 && (head_position - direction) % grid_width == grid_width - 1))
+	{
+		is_running = false;
+	}
+}
+
+void increase_snake()
+{
+	snake_poses[snake_length] = snake_poses[snake_length - 1];
+	snake_length++;
+	spawn_food();
 }
