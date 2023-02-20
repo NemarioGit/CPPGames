@@ -50,7 +50,7 @@ int main(int argc, char* args[])
     return 0;
 }
 
-//initialize game
+
 bool init() {
 
 	srand(static_cast<unsigned int>(time(nullptr)));
@@ -98,6 +98,8 @@ void deinit() {
 
 	//Quit SDL subsystems
 	SDL_Quit();
+
+	std::cout << "Your length is " << snake_length << "!";
 }
 
 void clear_window() {
@@ -165,8 +167,7 @@ void handle_input() {
 			default:
 				break;
 			}
-		
-		if (calledEvent) std::cout << direction << std::endl;
+			break;
 		default:
 			break;
 		}
@@ -183,7 +184,7 @@ void update_position() {
 }
 
 void spawn_food() {
-	do food_pos = rand() % grid_area;
+	do food_pos = rand() % grid_area; //Choose random position until it does not occupied by snake
 	while (is_cell_snake(food_pos, true));
 }
 
@@ -210,9 +211,10 @@ void check_snake_collisions()
 	{
 		is_running = false;
 	}
-	else if ((head_position < 0) || (head_position > grid_area) || 
-		(abs(head_position % grid_width) - (head_position - direction) % grid_width) == grid_width - 1 || 
-		(head_position % grid_width == 0 && (head_position - direction) % grid_width == grid_width - 1))
+	else if ((head_position < 0) || //Checking top border
+		(head_position > grid_area) || //Checking bottom border
+		(abs(head_position % grid_width) - (head_position - direction) % grid_width) == grid_width - 1 || //Checking left border
+		(head_position % grid_width == 0 && (head_position - direction) % grid_width == grid_width - 1)) //Checking right border
 	{
 		is_running = false;
 	}
