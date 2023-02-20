@@ -1,6 +1,6 @@
 # CPPGames
 
-This is the collection of simple games made in C++
+This is the collection of simple games made by me in C++
 
 As for now you can play:
 1. Guess the number
